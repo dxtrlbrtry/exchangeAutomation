@@ -128,6 +128,7 @@ test('Test Attachment Upload', async t => {
     await user2.getMail()
         .then(async resp => 
             await t.expect(resp.statusCode).eql(200));
+    logger.log('Get User2 mailbox');
 
     //Get mail from inbox matching the sent email
     let receivedEmail = user2.emails.find(e => e.emailId == sentEmail.emailId);
