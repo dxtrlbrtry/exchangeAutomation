@@ -1,11 +1,18 @@
 import { Logger } from '../lib/logger'
 import { User } from '../lib/user';
 
+let logger;
+
 fixture `Microsoft Exchange Email Fixture`
+    .beforeEach(async t => {
+        logger = new Logger(t.testRun.test.name);
+        logger.log('-----STARTED-----');
+    })
+    .afterEach(async t => {
+        logger.log('-----FINISHED-----');
+    })
 
 test('Test Email Exchange', async t => {
-    const logger = new Logger('Test Email Exchange');
-    logger.log('-----STARTED-----');
     //Test data
     const user1 = new User('zsoltester001@zsoltester.onmicrosoft.com', 'Testuser1');
     const user2 = new User('zsoltester002@zsoltester.onmicrosoft.com', 'Testuser1');
@@ -15,6 +22,7 @@ test('Test Email Exchange', async t => {
         recipientList: [ user2.emailAddress ],
         attachments: []
     };
+
     //Step1. Send an email from one user to another with a test URL (any URL you wish) embedded
     //in the email body and specific test text in the message subject field.
 
@@ -56,12 +64,10 @@ test('Test Email Exchange', async t => {
         .expect(receivedEmail.body).contains(message.body)
         .expect(receivedEmail.senderAddress).eql(user1.emailAddress);
     logger.log('Sent email content matches recipient\'s email content');
-    logger.log('-----PASSED-----');
 })
 
 
 test('Test Attachment Upload', async t => {
-    const logger = new Logger('Test Attachment Upload');
     //Test data
     const user1 = new User('zsoltester001@zsoltester.onmicrosoft.com', 'Testuser1');
     const user2 = new User('zsoltester002@zsoltester.onmicrosoft.com', 'Testuser1');
@@ -80,7 +86,6 @@ test('Test Attachment Upload', async t => {
             }
         ]
     };
-    logger.log('-----STARTED-----');
 
     //Step3. Send an email from one user to another with file attachments 
     //and specific test text in the message body field.
@@ -107,7 +112,9 @@ test('Test Attachment Upload', async t => {
     //Save attachment data in user
     await user1.getAttachments(sentEmail.id)
         .then(async resp => {
-            await t.expect(resp.statusCode).eql(200);
+            await t
+                .expect(resp.statusCode).eql(200)
+                .expect(sentEmail.attachments.length).eql(message.attachments.length);
             for (var i = 0; i < sentEmail.attachments.length; i++) {
                 await t.expect(sentEmail.attachments[i].name).eql(message.attachments[i].name);
             }
@@ -132,16 +139,13 @@ test('Test Attachment Upload', async t => {
             await t
                 .expect(resp.statusCode).eql(200)
                 .expect(receivedEmail.attachments.length).eql(sentEmail.attachments.length);
+            for (var i = 0; i < receivedEmail.attachments.length; i++) {
+                await t
+                    .expect(receivedEmail.attachments[i].name).eql(sentEmail.attachments[i].name)
+                    .expect(receivedEmail.attachments[i].size).eql(sentEmail.attachments[i].size)
+                    .expect(receivedEmail.attachments[i].contentType).eql(sentEmail.attachments[i].contentType)
+                    .expect(receivedEmail.attachments[i].contentBytes).eql(sentEmail.attachments[i].contentBytes);
+            }
         });
-    logger.log('Attachments loaded');
-
-    for (var i = 0; i < receivedEmail.attachments.length; i++) {
-        await t
-            .expect(receivedEmail.attachments[i].name).eql(sentEmail.attachments[i].name)
-            .expect(receivedEmail.attachments[i].size).eql(sentEmail.attachments[i].size)
-            .expect(receivedEmail.attachments[i].contentType).eql(sentEmail.attachments[i].contentType)
-            .expect(receivedEmail.attachments[i].contentBytes).eql(sentEmail.attachments[i].contentBytes);
-    }
     logger.log('Sent email attachments matches received email attachments');
-    logger.log('-----PASSED-----');
 })

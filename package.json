@@ -7,6 +7,9 @@
   },
   "author": "Zsolt Leitner",
   "license": "ISC",
+  "repository": {
+    "url": "https://github.com/dxtrlbrtry/exchangeAutomation"
+  },
   "dependencies": {
     "File": "^0.10.2",
     "filereader": "^0.10.3",

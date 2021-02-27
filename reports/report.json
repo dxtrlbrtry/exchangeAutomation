@@ -1,6 +1,6 @@
 {
-  "startTime": "2021-02-27T10:05:03.069Z",
-  "endTime": "2021-02-27T10:05:13.084Z",
+  "startTime": "2021-02-27T10:34:10.949Z",
+  "endTime": "2021-02-27T10:34:20.985Z",
   "userAgents": [
     "Chrome 88.0.4324.190 / Windows 10"
   ],
@@ -17,7 +17,7 @@
           "name": "Test Email Exchange",
           "meta": {},
           "errs": [],
-          "durationMs": 4581,
+          "durationMs": 4661,
           "screenshotPath": null,
           "skipped": false
         },
@@ -25,7 +25,7 @@
           "name": "Test Attachment Upload",
           "meta": {},
           "errs": [],
-          "durationMs": 5411,
+          "durationMs": 5349,
           "screenshotPath": null,
           "skipped": false
         }
