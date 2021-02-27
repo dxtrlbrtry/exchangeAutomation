@@ -1,0 +1,18 @@
+{
+  "name": "microsoftexchangemailproject",
+  "version": "1.0.0",
+  "description": "",
+  "main": "src/test-runner.js",
+  "scripts": {
+    "test": "node src/test-runner.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "File": "^0.10.2",
+    "filereader": "^0.10.3",
+    "request": "^2.88.2",
+    "request-promise": "^4.2.6",
+    "testcafe": "^1.11.0"
+  }
+}
