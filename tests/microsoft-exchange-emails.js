@@ -26,13 +26,11 @@ test('Test Email Exchange', async t => {
     //Step1. Send an email from one user to another with a test URL (any URL you wish) embedded
     //in the email body and specific test text in the message subject field.
 
-    //Send the email
     await user1.sendMail(message)
         .then(async resp =>
             await t.expect(resp.statusCode).eql(202));
     logger.log('Mail sent');
 
-    //Wait for the email to arrive
     let sentEmail;
     await user1.waitForEmail(message)
         .then(async resp => {
@@ -50,13 +48,11 @@ test('Test Email Exchange', async t => {
     //Step2. Verify from recipient mailbox that test URL 
     //and message subject text matches what you send in step 1.
 
-    //Get User2 mailbox
     await user2.getMail()
         .then(async resp => 
             await t.expect(resp.statusCode).eql(200));
     logger.log('Retrieved User2 mailbox');
 
-    //Verify that the received email data matches the sent email data
     let receivedEmail = user2.emails.find(e => e.emailId == sentEmail.emailId);
     await t
         .expect(receivedEmail).notEql(null)
@@ -90,13 +86,11 @@ test('Test Attachment Upload', async t => {
     //Step3. Send an email from one user to another with file attachments 
     //and specific test text in the message body field.
 
-    //Send the email
     await user1.sendMail(message)
         .then(async resp => 
             await t.expect(resp.statusCode).eql(202));
     logger.log('Mail sent');
 
-    //Wait for the email to arrive
     let sentEmail;
     await user1.waitForEmail(message)
         .then(async resp => {
@@ -109,7 +103,6 @@ test('Test Attachment Upload', async t => {
                 .expect(sentEmail.senderAddress).eql(user1.emailAddress);
         });
     
-    //Save attachment data in user
     await user1.getAttachments(sentEmail.id)
         .then(async resp => {
             await t
@@ -124,17 +117,14 @@ test('Test Attachment Upload', async t => {
     //Step4. Verify from recipient mailbox that attachment(s)
     //and message body text matches what you send in step 3.
 
-    //Get User2 mailbox
     await user2.getMail()
         .then(async resp => 
             await t.expect(resp.statusCode).eql(200));
     logger.log('Get User2 mailbox');
 
-    //Get mail from inbox matching the sent email
     let receivedEmail = user2.emails.find(e => e.emailId == sentEmail.emailId);
     await t.expect(receivedEmail).notEql(null);
 
-    //Verify that the attachment data is the same as the sent attachments data
     await user2.getAttachments(receivedEmail.id)
         .then(async resp => {
             await t
