@@ -42,7 +42,6 @@ test('Test Email Exchange', async t => {
                 .expect(sentEmail.body).contains(message.body)
                 .expect(sentEmail.senderAddress).eql(user1.emailAddress);
         });
-  
     logger.log('Sent data verified');
 
     //Step2. Verify from recipient mailbox that test URL 
