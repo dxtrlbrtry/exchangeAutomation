@@ -2,11 +2,10 @@
   "name": "microsoftexchangemailproject",
   "version": "1.0.0",
   "description": "",
-  "main": "src/test-runner.js",
   "scripts": {
-    "test": "node src/test-runner.js"
+    "test": "testcafe chrome:headless tests/ -r json:reports/report.json"
   },
-  "author": "",
+  "author": "Zsolt Leitner",
   "license": "ISC",
   "dependencies": {
     "File": "^0.10.2",

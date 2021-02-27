@@ -15,43 +15,53 @@ test('Test Email Exchange', async t => {
         recipientList: [ user2.emailAddress ],
         attachments: []
     };
+    //Step1. Send an email from one user to another with a test URL (any URL you wish) embedded
+    //in the email body and specific test text in the message subject field.
 
     //Send the email
-    var response = await user1.sendMail(message);
-    await t.expect(response.statusCode).eql(202);
+    await user1.sendMail(message)
+        .then(async resp =>
+            await t.expect(resp.statusCode).eql(202));
     logger.log('Mail sent');
 
     //Wait for the email to arrive
-    var response = await user1.waitForEmail(message);
-    let sentEmail = user1.emails[0];
-    await t
-        .expect(response.statusCode).eql(200)
-        .expect(sentEmail).notEql(null)
-        .expect(sentEmail.subject).eql(message.subject)
-        .expect(sentEmail.body).contains(message.body)
-        .expect(sentEmail.senderAddress).eql(user1.emailAddress);
-    logger.log('Verify sent data');
+    let sentEmail;
+    await user1.waitForEmail(message)
+        .then(async resp => {
+            sentEmail = user1.emails[0];
+            await t
+                .expect(resp.statusCode).eql(200)
+                .expect(sentEmail).notEql(null)
+                .expect(sentEmail.subject).eql(message.subject)
+                .expect(sentEmail.body).contains(message.body)
+                .expect(sentEmail.senderAddress).eql(user1.emailAddress);
+        });
+  
+    logger.log('Sent data verified');
 
-    //Verify that the email has arrived
-    var response = await user2.getMail();
-    await t.expect(response.statusCode).eql(200);
-    logger.log('Retrieved mailbox');
+    //Step2. Verify from recipient mailbox that test URL 
+    //and message subject text matches what you send in step 1.
+
+    //Get User2 mailbox
+    await user2.getMail()
+        .then(async resp => 
+            await t.expect(resp.statusCode).eql(200));
+    logger.log('Retrieved User2 mailbox');
 
     //Verify that the received email data matches the sent email data
-    let receivedEmail = user2.emails.find(em => em.emailId == sentEmail.emailId);
+    let receivedEmail = user2.emails.find(e => e.emailId == sentEmail.emailId);
     await t
         .expect(receivedEmail).notEql(null)
         .expect(receivedEmail.subject).eql(message.subject)
         .expect(receivedEmail.body).contains(message.body)
         .expect(receivedEmail.senderAddress).eql(user1.emailAddress);
-    logger.log('Sent email matches recipient\'s email');
+    logger.log('Sent email content matches recipient\'s email content');
     logger.log('-----PASSED-----');
 })
 
 
 test('Test Attachment Upload', async t => {
     const logger = new Logger('Test Attachment Upload');
-    logger.log('-----STARTED-----');
     //Test data
     const user1 = new User('zsoltester001@zsoltester.onmicrosoft.com', 'Testuser1');
     const user2 = new User('zsoltester002@zsoltester.onmicrosoft.com', 'Testuser1');
@@ -70,44 +80,60 @@ test('Test Attachment Upload', async t => {
             }
         ]
     };
+    logger.log('-----STARTED-----');
+
+    //Step3. Send an email from one user to another with file attachments 
+    //and specific test text in the message body field.
 
     //Send the email
-    var response = await user1.sendMail(message);
-    await t.expect(response.statusCode).eql(202);
+    await user1.sendMail(message)
+        .then(async resp => 
+            await t.expect(resp.statusCode).eql(202));
     logger.log('Mail sent');
 
     //Wait for the email to arrive
-    var response = await user1.waitForEmail(message);
-    let sentEmail = user1.emails[0];
-    await t
-        .expect(response.statusCode).eql(200)
-        .expect(sentEmail).notEql(null)
-        .expect(sentEmail.subject).eql(message.subject)
-        .expect(sentEmail.body).contains(message.body)
-        .expect(sentEmail.senderAddress).eql(user1.emailAddress);
-
+    let sentEmail;
+    await user1.waitForEmail(message)
+        .then(async resp => {
+            sentEmail = user1.emails[0];
+            await t
+                .expect(resp.statusCode).eql(200)
+                .expect(sentEmail).notEql(null)
+                .expect(sentEmail.subject).eql(message.subject)
+                .expect(sentEmail.body).contains(message.body)
+                .expect(sentEmail.senderAddress).eql(user1.emailAddress);
+        });
+    
     //Save attachment data in user
-    var response = await user1.getAttachments(sentEmail.id);
-    await t.expect(response.statusCode).eql(200);
-    for (var i = 0; i < sentEmail.attachments.length; i++) {
-        await t.expect(sentEmail.attachments[i].name).eql(message.attachments[i].name);
-    }
-    logger.log('Verify sent data');
+    await user1.getAttachments(sentEmail.id)
+        .then(async resp => {
+            await t.expect(resp.statusCode).eql(200);
+            for (var i = 0; i < sentEmail.attachments.length; i++) {
+                await t.expect(sentEmail.attachments[i].name).eql(message.attachments[i].name);
+            }
+        });  
+    logger.log('Sent data verified');
+
+    //Step4. Verify from recipient mailbox that attachment(s)
+    //and message body text matches what you send in step 3.
 
     //Get User2 mailbox
-    var response = await user2.getMail();
-    await t.expect(response.statusCode).eql(200);
+    await user2.getMail()
+        .then(async resp => 
+            await t.expect(resp.statusCode).eql(200));
 
     //Get mail from inbox matching the sent email
     let receivedEmail = user2.emails.find(e => e.emailId == sentEmail.emailId);
     await t.expect(receivedEmail).notEql(null);
 
     //Verify that the attachment data is the same as the sent attachments data
-    var response = await user2.getAttachments(receivedEmail.id);
-    await t
-        .expect(response.statusCode).eql(200)
-        .expect(receivedEmail.attachments.length).eql(sentEmail.attachments.length);
-    logger.log('Load attachments');
+    await user2.getAttachments(receivedEmail.id)
+        .then(async resp => {
+            await t
+                .expect(resp.statusCode).eql(200)
+                .expect(receivedEmail.attachments.length).eql(sentEmail.attachments.length);
+        });
+    logger.log('Attachments loaded');
 
     for (var i = 0; i < receivedEmail.attachments.length; i++) {
         await t
