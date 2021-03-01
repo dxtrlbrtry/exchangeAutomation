@@ -35,7 +35,8 @@ test('Test Email Exchange', async t => {
                 .expect(email).notEql(null)
                 .expect(email.subject).eql(message.subject)
                 .expect(email.body).contains(message.body)
-                .expect(email.senderAddress).eql(user1.emailAddress);
+                .expect(email.senderAddress).eql(user1.emailAddress)
+                .expect(email.recipientList).eql(message.recipientList);
             sentEmail = email;
             logger.log('Sent data verified');
         })
@@ -51,7 +52,8 @@ test('Test Email Exchange', async t => {
                 .expect(receivedEmail).notEql(null)
                 .expect(receivedEmail.subject).eql(sentEmail.subject)
                 .expect(receivedEmail.body).contains(sentEmail.body)
-                .expect(receivedEmail.senderAddress).eql(sentEmail.senderAddress);
+                .expect(receivedEmail.senderAddress).eql(sentEmail.senderAddress)
+                .expect(receivedEmail.recipientList).eql(sentEmail.recipientList);
             logger.log('Sent email content matches recipient\'s email content');
         })
         .catch(err => logger.error(err));
@@ -92,7 +94,8 @@ test('Test Attachment Upload', async t => {
                 .expect(email).notEql(null)
                 .expect(email.subject).eql(message.subject)
                 .expect(email.body).contains(message.body)
-                .expect(email.senderAddress).eql(user1.emailAddress);
+                .expect(email.senderAddress).eql(user1.emailAddress)
+                .expect(email.recipientList).eql(message.recipientList);
             sentEmail = email;
             await user1.getAttachments(email.id)
                 .then(async attachments => {
@@ -115,7 +118,8 @@ test('Test Attachment Upload', async t => {
             await t.expect(receivedEmail).notEql(null)
                 .expect(receivedEmail.subject).eql(sentEmail.subject)
                 .expect(receivedEmail.body).contains(sentEmail.body)
-                .expect(receivedEmail.senderAddress).eql(sentEmail.senderAddress);
+                .expect(receivedEmail.senderAddress).eql(sentEmail.senderAddress)
+                .expect(receivedEmail.recipientList).eql(sentEmail.recipientList);
             await user2.getAttachments(receivedEmail.id)
                 .then(async attachments => {
                     await t.expect(attachments.length).eql(sentEmail.attachments.length);
