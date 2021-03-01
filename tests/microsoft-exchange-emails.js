@@ -29,8 +29,7 @@ test('Test Email Exchange', async t => {
         .then(() => logger.log('Mail sent'))
         .catch(err => logger.error(err));
 
-    let sentEmail;
-    await user1.waitForEmail(message)
+    let sentEmail = await user1.waitForEmail(message)
         .then(async email => {
             await t
                 .expect(email).notEql(null)
@@ -38,8 +37,8 @@ test('Test Email Exchange', async t => {
                 .expect(email.body).contains(message.body)
                 .expect(email.senderAddress).eql(user1.emailAddress)
                 .expect(email.recipientList).eql(message.recipientList);
-            sentEmail = email;
             logger.log('Sent data verified');
+            return email;
         })
         .catch(err => logger.error(err));
 
@@ -90,8 +89,7 @@ test('Test Attachment Upload', async t => {
         .then(() => logger.log('Mail sent'))
         .catch(err => logger.error(err));
 
-    let sentEmail;
-    await user1.waitForEmail(message)
+    let sentEmail = await user1.waitForEmail(message)
         .then(async email => {
             await t
                 .expect(email).notEql(null)
@@ -99,16 +97,16 @@ test('Test Attachment Upload', async t => {
                 .expect(email.body).contains(message.body)
                 .expect(email.senderAddress).eql(user1.emailAddress)
                 .expect(email.recipientList).eql(message.recipientList);
-            sentEmail = email;
             await user1.getAttachments(email.id)
                 .then(async attachments => {
                     await t.expect(attachments.length).eql(message.attachments.length);
                     for (var i = 0; i < attachments.length; i++) {
                         await t.expect(attachments[i].name).eql(message.attachments[i].name);
                     }
-                    sentEmail.attachments = attachments;
+                    email.attachments = attachments;
                 });
             logger.log('Sent data verified');
+            return email;
         })
         .catch(err => logger.error(err));
 
