@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "",
   "scripts": {
-    "test": "testcafe chrome:headless tests/ -r json:reports/report.json"
+    "test": "node src/app.js"
   },
   "author": "Zsolt Leitner",
   "license": "ISC",

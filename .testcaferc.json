@@ -1,0 +1,9 @@
+{
+    "browsers": "chrome:headless",
+    "src": "tests/",
+    "reporter": {
+        "name": "json",
+        "output": "reports/report.json"
+    },
+    "skipUncaughtErrors": false
+}
