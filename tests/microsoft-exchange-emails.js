@@ -1,5 +1,5 @@
 import logger from '../lib/logger'
-import { User } from '../lib/user';
+import User from '../lib/user';
 
 fixture `Microsoft Exchange Email Fixture`
     .beforeEach(async t => {
@@ -118,8 +118,7 @@ test('Test Attachment Upload', async t => {
                 .expect(receivedEmail.senderAddress).eql(sentEmail.senderAddress);
             await user2.getAttachments(receivedEmail.id)
                 .then(async attachments => {
-                    await t
-                        .expect(attachments.length).eql(sentEmail.attachments.length);
+                    await t.expect(attachments.length).eql(sentEmail.attachments.length);
                     for (var i = 0; i < attachments.length; i++) {
                         await t
                             .expect(attachments[i].name).eql(sentEmail.attachments[i].name)
