@@ -13,6 +13,7 @@
   "dependencies": {
     "File": "^0.10.2",
     "filereader": "^0.10.3",
+    "jsonschema": "^1.4.0",
     "request": "^2.88.2",
     "request-promise": "^4.2.6",
     "testcafe": "^1.11.0"

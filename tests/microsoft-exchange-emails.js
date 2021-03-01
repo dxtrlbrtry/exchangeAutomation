@@ -24,6 +24,7 @@ test('Test Email Exchange', async t => {
     //Step1. Send an email from one user to another with a test URL (any URL you wish) embedded
     //in the email body and specific test text in the message subject field.
 
+    await user1.authenticate();
     await user1.sendMail(message)
         .then(() => logger.log('Mail sent'))
         .catch(err => logger.error(err));
@@ -45,6 +46,7 @@ test('Test Email Exchange', async t => {
     //Step2. Verify from recipient mailbox that test URL 
     //and message subject text matches what you send in step 1.
 
+    await user2.authenticate();
     await user2.getMail()
         .then(async emails => {
             let receivedEmail = emails.find(e => e.uniqueId == sentEmail.uniqueId);
@@ -83,6 +85,7 @@ test('Test Attachment Upload', async t => {
     //Step3. Send an email from one user to another with file attachments 
     //and specific test text in the message body field.
 
+    await user1.authenticate();
     await user1.sendMail(message)
         .then(() => logger.log('Mail sent'))
         .catch(err => logger.error(err));
@@ -112,6 +115,7 @@ test('Test Attachment Upload', async t => {
     //Step4. Verify from recipient mailbox that attachment(s)
     //and message body text matches what you send in step 3.
 
+    await user2.authenticate();
     await user2.getMail()
         .then(async emails => {
             let receivedEmail = emails.find(e => e.uniqueId == sentEmail.uniqueId);
