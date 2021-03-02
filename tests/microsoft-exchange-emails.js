@@ -1,4 +1,3 @@
-import { mailFolders } from '../lib/mail-service';
 import logger from '../lib/logger'
 import User from '../lib/user';
 
@@ -47,7 +46,7 @@ test('Test Email Exchange', async t => {
     //and message subject text matches what you send in step 1.
 
     await user2.authenticate(200);
-    await user2.getMail(mailFolders.INBOX, '', 200)
+    await user2.getMail('inbox', '', 200)
         .then(async emails => {
             let receivedEmail = emails.find(e => e.uniqueId == sentEmail.uniqueId);
             await t
@@ -115,7 +114,7 @@ test('Test Attachment Upload', async t => {
     //and message body text matches what you send in step 3.
 
     await user2.authenticate(200);
-    await user2.getMail(mailFolders.INBOX, '', 200)
+    await user2.getMail('inbox', '', 200)
         .then(async emails => {
             let receivedEmail = emails.find(e => e.uniqueId == sentEmail.uniqueId);
             await t.expect(receivedEmail).notEql(null)
