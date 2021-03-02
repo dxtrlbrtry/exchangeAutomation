@@ -1,3 +1,4 @@
+import { mailFolders } from '../lib/mail-service';
 import logger from '../lib/logger'
 import User from '../lib/user';
 
@@ -24,8 +25,8 @@ test('Test Email Exchange', async t => {
     //Step1. Send an email from one user to another with a test URL (any URL you wish) embedded
     //in the email body and specific test text in the message subject field.
 
-    await user1.authenticate();
-    await user1.sendMail(message)
+    await user1.authenticate(200);
+    await user1.sendMail(message, 202)
         .then(() => logger.log('Mail sent'))
         .catch(err => logger.error(err));
 
@@ -45,8 +46,8 @@ test('Test Email Exchange', async t => {
     //Step2. Verify from recipient mailbox that test URL 
     //and message subject text matches what you send in step 1.
 
-    await user2.authenticate();
-    await user2.getMail()
+    await user2.authenticate(200);
+    await user2.getMail(mailFolders.INBOX, '', 200)
         .then(async emails => {
             let receivedEmail = emails.find(e => e.uniqueId == sentEmail.uniqueId);
             await t
@@ -84,8 +85,8 @@ test('Test Attachment Upload', async t => {
     //Step3. Send an email from one user to another with file attachments 
     //and specific test text in the message body field.
 
-    await user1.authenticate();
-    await user1.sendMail(message)
+    await user1.authenticate(200);
+    await user1.sendMail(message, 202)
         .then(() => logger.log('Mail sent'))
         .catch(err => logger.error(err));
 
@@ -97,7 +98,7 @@ test('Test Attachment Upload', async t => {
                 .expect(email.body).contains(message.body)
                 .expect(email.senderAddress).eql(user1.emailAddress)
                 .expect(email.recipientList).eql(message.recipientList);
-            await user1.getAttachments(email.id)
+            await user1.getAttachments(email.id, 200)
                 .then(async attachments => {
                     await t.expect(attachments.length).eql(message.attachments.length);
                     for (var i = 0; i < attachments.length; i++) {
@@ -113,8 +114,8 @@ test('Test Attachment Upload', async t => {
     //Step4. Verify from recipient mailbox that attachment(s)
     //and message body text matches what you send in step 3.
 
-    await user2.authenticate();
-    await user2.getMail()
+    await user2.authenticate(200);
+    await user2.getMail(mailFolders.INBOX, '', 200)
         .then(async emails => {
             let receivedEmail = emails.find(e => e.uniqueId == sentEmail.uniqueId);
             await t.expect(receivedEmail).notEql(null)
@@ -122,7 +123,7 @@ test('Test Attachment Upload', async t => {
                 .expect(receivedEmail.body).contains(sentEmail.body)
                 .expect(receivedEmail.senderAddress).eql(sentEmail.senderAddress)
                 .expect(receivedEmail.recipientList).eql(sentEmail.recipientList);
-            await user2.getAttachments(receivedEmail.id)
+            await user2.getAttachments(receivedEmail.id, 200)
                 .then(async attachments => {
                     await t.expect(attachments.length).eql(sentEmail.attachments.length);
                     for (var i = 0; i < attachments.length; i++) {
